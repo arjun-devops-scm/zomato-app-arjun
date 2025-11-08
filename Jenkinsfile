@@ -45,5 +45,38 @@ stages {
         }
       }
     }
+    stage ('docker build') {
+      steps {
+        script {
+          sh "docker build -t arjundocker92/zomato:${BUILD_NUMBER} ."
+        }
+      }
+    }
+   stage ('Trivy scan image') {
+     steps {
+       script {
+         sh "trivy image --format json -o zomate-image-trivy-scan-report.json arjundocker92/zomato:${BUILD_NUMBER}"
+         archiveArtifacts artifacts: 'zomate-image-trivy-scan-report.json',  fingerprint: true
+       }
+     }
+     stage ('Pushing Image to Docker hub') {
+       steps {
+         script {
+           withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'docker_user', passwordVariable: 'docker_password')]) {
+             echo '$docker_password | docker login -u $docker_user --password-stdin'
+             sh "docker push arjundocker92/zomato:${BUILD_NUMBER}"
+           }
+         }
+       }
+     }
+     stage ('deploy zomato app') {
+       steps {
+         script {
+           sshagent (credentials: ['deploy-sever-creds']) {
+             sh "ssh -o StrictHostKeyChecking=no root@${SERVER_IP} 'echo "Pulling image..."; docker images; docker run -itd --name zomato -p 3000:3000 arjundocker92/zomato:${BUILD_NUMBER}'"
+           }
+         }
+       }
+     }
   }
 }
