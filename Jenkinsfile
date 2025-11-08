@@ -11,5 +11,7 @@ stages {
       script {
         sh "npm run test"
     }
+   }
   }
+ }
 }
