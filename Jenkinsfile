@@ -75,12 +75,7 @@ stages {
            sshagent (credentials: ['deploy-sever-creds']) {
              def SERVER_IP = "65.0.68.100"
               sh """
-                  ssh -o StrictHostKeyChecking=no root@${SERVER_IP} \
-                  'echo "Pulling image..."; \
-                  docker pull arjundocker92/zomato:${BUILD_NUMBER}; \
-                  docker stop zomato || true; \
-                  docker rm zomato || true; \
-                  docker run -d --name zomato -p 3000:3000 arjundocker92/zomato:${BUILD_NUMBER}'
+                  ssh -o StrictHostKeyChecking=no root@${SERVER_IP} 'echo "Pulling image..."; 
               """
           }
          }
