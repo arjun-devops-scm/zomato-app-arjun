@@ -73,7 +73,7 @@ stages {
        steps {
          script {
            sshagent (credentials: ['deploy-sever-creds']) {
-             sh "ssh -o StrictHostKeyChecking=no root@${SERVER_IP} 'echo "Pulling image..."; docker images; docker run -itd --name zomato -p 3000:3000 arjundocker92/zomato:${BUILD_NUMBER}'"
+             sh "ssh -o StrictHostKeyChecking=no root@${SERVER_IP} 'echo Pulling image...; docker images; docker run -itd --name zomato -p 3000:3000 arjundocker92/zomato:${BUILD_NUMBER}'"
            }
          }
        }
